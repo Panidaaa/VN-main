@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class s1 : MonoBehaviour
 {
@@ -10,24 +11,39 @@ public class s1 : MonoBehaviour
     string[] names = { "", "Yuri" };
     Text textDisplay;
     int currentLine = 0;
-    void Start()
+    TW_MultiStrings_Regular tw;
+    fadeCanvas fadeCanvas;
+
+    void Awake()
     {
         string allText = textFile.text;
-        line = allText.Split("\n");
+        //line = allText.Split("\n");
         textDisplay = GameObject.Find("Text").GetComponent<Text>();
-        displayText();
+        tw = GameObject.Find("Text").GetComponent<TW_MultiStrings_Regular>();
+        fadeCanvas = GameObject.Find("Canvas").GetComponent<fadeCanvas>();
+        tw.MultiStrings = allText.Split("\n");
+        textDisplay.text = tw.MultiStrings[0];
     }
 
-    // Update is called once per frame
+    void Start()
+    {
+        fadeCanvas.ShowUI();
+    }
     void Update()
     {
         if (Input.GetMouseButtonDown(0))
         {
             currentLine++;
-            displayText();
+            if (currentLine >= 4)
+            {
+                if (SceneManager.GetActiveScene().name.CompareTo("S1") == 0)
+                {
+                    fadeCanvas.HideUI();
+                    
+                }
+            }
+            else tw.NextString();
         }
-       
-        
     }
 
     void displayText()
@@ -36,11 +52,8 @@ public class s1 : MonoBehaviour
         tmp = line[currentLine].Split(":");
         int cNumber = int.Parse(tmp[0]);
         string txt = "";
-        if (cNumber > 0) txt = names[cNumber] + " : " + tmp[1];
+        if (cNumber > 0) txt = names[cNumber] + ": " + tmp[1];
         else txt = tmp[1];
         textDisplay.text = txt;
-
-
     }
-
 }
